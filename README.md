@@ -1,3 +1,10 @@
+
+# About this fork:
+   implement mysql event store.
+
+
+# Original readme:
+
 ENode is a framework aims to help us developing ddd, cqrs, eda, and event sourcing style applications.
 
 Developing rules:
