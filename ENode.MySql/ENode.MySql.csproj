@@ -70,7 +70,9 @@
   <ItemGroup>
     <Compile Include="Commanding\Impl\MySqlCommandStore.cs" />
     <Compile Include="Configurations\ENodeConfigurationExtensions.cs" />
+    <Compile Include="DapperExtentions.cs" />
     <Compile Include="Eventing\Impl\MySqlEventStore.cs" />
+    <Compile Include="Infrastructure\Impl\Mysql\MySqlLockService.cs" />
     <Compile Include="Infrastructure\Impl\Mysql\MySqlMessageHandleRecordStore.cs" />
     <Compile Include="Infrastructure\Impl\Mysql\MySqlSequenceMessagePublishedVersionStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,6 +86,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MySqlTable.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

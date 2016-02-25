@@ -1,8 +1,4 @@
-﻿using System;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using ECommon.Components;
+﻿using ECommon.Components;
 using ECommon.Dapper;
 using ECommon.IO;
 using ECommon.Logging;
@@ -10,8 +6,12 @@ using ECommon.Serializing;
 using ECommon.Utilities;
 using ENode.Configurations;
 using ENode.Infrastructure;
+using System;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ENode.Commanding.Impl
 {
@@ -65,7 +65,7 @@ namespace ENode.Commanding.Impl
                 {
                     using (var connection = GetConnection())
                     {
-                        await connection.InsertAsync(record, _tableName);
+                        await connection.InsertToMySqlAsync(record, _tableName);
                         return new AsyncTaskResult<CommandAddResult>(AsyncTaskStatus.Success, null, CommandAddResult.Success);
                     }
                 }

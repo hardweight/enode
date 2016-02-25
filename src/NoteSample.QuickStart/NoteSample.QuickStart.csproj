@@ -90,6 +90,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ENode.MySql\ENode.MySql.csproj">
+      <Project>{85aaa831-e344-4927-91d3-87f7b21b1172}</Project>
+      <Name>ENode.MySql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\eNode\ENode.csproj">
       <Project>{f884f01a-ed67-4f21-8576-fd2588491b24}</Project>
       <Name>ENode</Name>

@@ -86,7 +86,7 @@ namespace ENode.Infrastructure.Impl.Mysql
             {
                 using (var connection = GetConnection())
                 {
-                    await connection.InsertAsync(record, _twoMessageTableName);
+                    await connection.InsertToMySqlAsync(record, _twoMessageTableName);
                     return AsyncTaskResult.Success;
                 }
             }
@@ -111,7 +111,7 @@ namespace ENode.Infrastructure.Impl.Mysql
             {
                 using (var connection = GetConnection())
                 {
-                    await connection.InsertAsync(record, _threeMessageTableName);
+                    await connection.InsertToMySqlAsync(record, _threeMessageTableName);
                     return AsyncTaskResult.Success;
                 }
             }

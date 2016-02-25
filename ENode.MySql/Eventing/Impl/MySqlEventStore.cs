@@ -91,7 +91,8 @@ namespace ENode.Eventing.Impl
                 {
                     using (var connection = GetConnection())
                     {
-                        await connection.InsertAsync(record, _tableName);
+                        await connection.InsertToMySqlAsync(record, _tableName);
+                        
                         return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.Success, EventAppendResult.Success);
                     }
                 }

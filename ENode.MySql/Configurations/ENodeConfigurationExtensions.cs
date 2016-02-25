@@ -1,20 +1,27 @@
-﻿using ECommon.Configurations;
-using ENode.Commanding;
+﻿using ENode.Commanding;
 using ENode.Commanding.Impl;
 using ENode.Eventing;
 using ENode.Eventing.Impl;
 using ENode.Infrastructure;
 using ENode.Infrastructure.Impl.Mysql;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ENode.Configurations
 {
     public static class ENodeConfigurationExtensions
     {
+        /// <summary>Use the MySqlLockService as the ILockService.
+        /// </summary>
+        /// <returns></returns>
+        public static ENodeConfiguration UseMySqlLockService(this ENodeConfiguration configuration, OptionSetting optionSetting = null)
+        {
+            var _configuration = configuration.GetCommonConfiguration();
+            _configuration.SetDefault<ILockService, MySqlLockService>(new MySqlLockService(optionSetting ?? new OptionSetting(
+                new KeyValuePair<string, object>("ConnectionString", configuration.Setting.SqlDefaultConnectionString),
+                new KeyValuePair<string, object>("TableName", "LockKey"))));
+            return configuration;
+        }
+
         public static ENodeConfiguration UseMySqlCommandStore(this ENodeConfiguration configuration, OptionSetting optionSetting = null)
         {
             var _configuration = configuration.GetCommonConfiguration();

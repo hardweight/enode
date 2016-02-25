@@ -1,15 +1,15 @@
-﻿using Dapper;
-using ECommon.Dapper;
-using ECommon.Utilities;
-using ENode.Configurations;
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using Dapper;
+using ECommon.Dapper;
+using ECommon.Utilities;
+using ENode.Configurations;
 
-namespace ENode.Infrastructure.Impl.SQL
+namespace ENode.Infrastructure.Impl.Mysql
 {
-    public class SqlServerLockService : ILockService
+    public class MySqlLockService : ILockService
     {
         #region Private Variables
 
@@ -21,7 +21,7 @@ namespace ENode.Infrastructure.Impl.SQL
 
         #region Constructors
 
-        public SqlServerLockService(OptionSetting optionSetting)
+        public MySqlLockService(OptionSetting optionSetting)
         {
             Ensure.NotNull(optionSetting, "optionSetting");
 
@@ -31,7 +31,7 @@ namespace ENode.Infrastructure.Impl.SQL
             Ensure.NotNull(_connectionString, "_connectionString");
             Ensure.NotNull(_tableName, "_tableName");
 
-            _lockKeySqlFormat = "SELECT * FROM [" + _tableName + "] WITH (UPDLOCK) WHERE [Name] = '{0}'";
+            _lockKeySqlFormat = "SELECT * FROM [" + _tableName + "] WHERE [Name] = '{0}' FOR UPDATE";
         }
 
         #endregion
@@ -72,9 +72,10 @@ namespace ENode.Infrastructure.Impl.SQL
             var sql = string.Format(_lockKeySqlFormat, key);
             transaction.Connection.Query(sql, transaction: transaction);
         }
-        private SqlConnection GetConnection()
+
+        private IDbConnection GetConnection()
         {
-            return new SqlConnection(_connectionString);
+            return new MySql.Data.MySqlClient.MySqlConnection(_connectionString);
         }
     }
 }
