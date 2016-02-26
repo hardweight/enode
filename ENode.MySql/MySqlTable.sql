@@ -27,13 +27,12 @@ CREATE TABLE `Command` (
   `CommandId` varchar(36) NOT NULL,
   `AggregateRootId` varchar(36) DEFAULT NULL,
   `MessagePayload` longtext,
-  `MessageTypeName` varchar(256) DEFAULT NULL,
+  `MessageTypeName` varchar(255) DEFAULT NULL,
   `CreatedOn` datetime DEFAULT NULL,
   PRIMARY KEY (`CommandId`),
   UNIQUE KEY `Sequence_UNIQUE` (`Sequence`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 
 
 --
@@ -45,7 +44,7 @@ DROP TABLE IF EXISTS `EventStream`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EventStream` (
   `Sequence` bigint(20) NOT NULL AUTO_INCREMENT,
-  `AggregateRootTypeName` varchar(256) DEFAULT NULL,
+  `AggregateRootTypeName` varchar(255) DEFAULT NULL,
   `AggregateRootId` varchar(36) NOT NULL,
   `Version` int(11) NOT NULL,
   `CommandId` varchar(36) DEFAULT NULL,
@@ -54,9 +53,8 @@ CREATE TABLE `EventStream` (
   PRIMARY KEY (`AggregateRootId`,`Version`),
   UNIQUE KEY `Sequence_UNIQUE` (`Sequence`),
   UNIQUE KEY `IX_EventStream_AggId_CommandId` (`AggregateRootId`,`CommandId`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 
 --
 -- Table structure for table `LockKey`
@@ -72,6 +70,7 @@ CREATE TABLE `LockKey` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
+
 --
 -- Table structure for table `MessageHandleRecord`
 --
@@ -82,13 +81,14 @@ DROP TABLE IF EXISTS `MessageHandleRecord`;
 CREATE TABLE `MessageHandleRecord` (
   `Sequence` bigint(20) NOT NULL AUTO_INCREMENT,
   `MessageId` varchar(36) NOT NULL,
-  `HandlerTypeName` varchar(256) NOT NULL,
-  `MessageTypeName` varchar(256) DEFAULT NULL,
-  `AggregateRootTypeName` varchar(256) DEFAULT NULL,
+  `HandlerTypeName` varchar(255) NOT NULL,
+  `MessageTypeName` varchar(255) DEFAULT NULL,
+  `AggregateRootTypeName` varchar(255) DEFAULT NULL,
   `AggregateRootId` varchar(36) DEFAULT NULL,
   `Version` int(11) DEFAULT NULL,
   `CreatedOn` datetime DEFAULT NULL,
-  PRIMARY KEY (`Sequence`)
+  PRIMARY KEY (`MessageId`,`HandlerTypeName`),
+  UNIQUE KEY `Sequence_UNIQUE` (`Sequence`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -103,7 +103,7 @@ DROP TABLE IF EXISTS `SequenceMessagePublishedVersion`;
 CREATE TABLE `SequenceMessagePublishedVersion` (
   `Sequence` bigint(20) NOT NULL AUTO_INCREMENT,
   `ProcessorName` varchar(128) NOT NULL,
-  `AggregateRootTypeName` varchar(256) DEFAULT NULL,
+  `AggregateRootTypeName` varchar(255) DEFAULT NULL,
   `AggregateRootId` varchar(36) NOT NULL,
   `PublishedVersion` int(11) NOT NULL,
   `CreatedOn` datetime DEFAULT NULL,
@@ -111,7 +111,6 @@ CREATE TABLE `SequenceMessagePublishedVersion` (
   UNIQUE KEY `Sequence_UNIQUE` (`Sequence`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 
 --
 -- Table structure for table `ThreeMessageHandleRecord`
@@ -125,18 +124,18 @@ CREATE TABLE `ThreeMessageHandleRecord` (
   `MessageId1` varchar(36) NOT NULL,
   `MessageId2` varchar(36) NOT NULL,
   `MessageId3` varchar(36) NOT NULL,
-  `HandlerTypeName` varchar(256) NOT NULL,
-  `Message1TypeName` varchar(256) DEFAULT NULL,
-  `Message2TypeName` varchar(256) DEFAULT NULL,
-  `Message3TypeName` varchar(256) DEFAULT NULL,
-  `AggregateRootTypeName` varchar(256) DEFAULT NULL,
+  `HandlerTypeName` varchar(255) NOT NULL,
+  `Message1TypeName` varchar(255) DEFAULT NULL,
+  `Message2TypeName` varchar(255) DEFAULT NULL,
+  `Message3TypeName` varchar(255) DEFAULT NULL,
+  `AggregateRootTypeName` varchar(255) DEFAULT NULL,
   `AggregateRootId` varchar(36) DEFAULT NULL,
   `Version` int(11) DEFAULT NULL,
   `CreatedOn` datetime DEFAULT NULL,
-  PRIMARY KEY (`Sequence`)
+  PRIMARY KEY (`MessageId1`,`MessageId2`,`MessageId3`,`HandlerTypeName`),
+  UNIQUE KEY `Sequence_UNIQUE` (`Sequence`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 
 --
 -- Table structure for table `TwoMessageHandleRecord`
@@ -149,14 +148,16 @@ CREATE TABLE `TwoMessageHandleRecord` (
   `Sequence` bigint(20) NOT NULL AUTO_INCREMENT,
   `MessageId1` varchar(36) NOT NULL,
   `MessageId2` varchar(36) NOT NULL,
-  `HandlerTypeName` varchar(256) NOT NULL,
-  `Message1TypeName` varchar(256) DEFAULT NULL,
-  `Message2TypeName` varchar(256) DEFAULT NULL,
-  `AggregateRootTypeName` varchar(256) DEFAULT NULL,
+  `HandlerTypeName` varchar(255) NOT NULL,
+  `Message1TypeName` varchar(255) DEFAULT NULL,
+  `Message2TypeName` varchar(255) DEFAULT NULL,
+  `AggregateRootTypeName` varchar(255) DEFAULT NULL,
   `AggregateRootId` varchar(36) DEFAULT NULL,
   `Version` int(11) DEFAULT NULL,
   `CreatedOn` datetime DEFAULT NULL,
-  PRIMARY KEY (`Sequence`)
+  PRIMARY KEY (`MessageId1`,`MessageId2`,`HandlerTypeName`),
+  UNIQUE KEY `IX_MessageId1_MessageId2_HandlerTypeName` (`MessageId1`,`MessageId2`,`HandlerTypeName`),
+  UNIQUE KEY `Sequence_UNIQUE` (`Sequence`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -169,4 +170,4 @@ CREATE TABLE `TwoMessageHandleRecord` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-02-25 21:17:50
+-- Dump completed on 2016-02-26 22:05:52
