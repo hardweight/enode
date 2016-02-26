@@ -41,14 +41,13 @@ namespace ENode.Eventing.Impl
 
             _connectionString = optionSetting.GetOptionValue<string>("ConnectionString");
             _tableName = optionSetting.GetOptionValue<string>("TableName");
-            _primaryKeyName = optionSetting.GetOptionValue<string>("PrimaryKeyName");
+            _primaryKeyName = "PRIMARY"; 
             _commandIndexName = optionSetting.GetOptionValue<string>("CommandIndexName");
             _bulkCopyBatchSize = optionSetting.GetOptionValue<int>("BulkCopyBatchSize");
             _bulkCopyTimeout = optionSetting.GetOptionValue<int>("BulkCopyTimeout");
 
             Ensure.NotNull(_connectionString, "_connectionString");
             Ensure.NotNull(_tableName, "_tableName");
-            Ensure.NotNull(_primaryKeyName, "_primaryKeyName");
             Ensure.NotNull(_commandIndexName, "_commandIndexName");
             Ensure.Positive(_bulkCopyBatchSize, "_bulkCopyBatchSize");
             Ensure.Positive(_bulkCopyTimeout, "_bulkCopyTimeout");
@@ -96,17 +95,16 @@ namespace ENode.Eventing.Impl
                         return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.Success, EventAppendResult.Success);
                     }
                 }
-                catch (DbException ex)
+                catch (MySql.Data.MySqlClient.MySqlException ex)
                 {
-                    //todo: this error number is from sql server, make sure it's same with mysql database.
-                    //if (ex.Number == 2627 && ex.Message.Contains(_primaryKeyName))
-                    //{
-                    //    return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.Success, EventAppendResult.DuplicateEvent);
-                    //}
-                    //else if (ex.Number == 2601 && ex.Message.Contains(_commandIndexName))
-                    //{
-                    //    return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.Success, EventAppendResult.DuplicateCommand);
-                    //}
+                    if (ex.Number == 1062 && ex.Message.Contains(_primaryKeyName))
+                    {
+                        return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.Success, EventAppendResult.DuplicateEvent);
+                    }
+                    else if (ex.Number == 1062 && ex.Message.Contains(_commandIndexName))
+                    {
+                        return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.Success, EventAppendResult.DuplicateCommand);
+                    }
 
                     _logger.Error(string.Format("Append event has sql exception, eventStream: {0}", eventStream), ex);
                     return new AsyncTaskResult<EventAppendResult>(AsyncTaskStatus.IOException, ex.Message, EventAppendResult.Failed);

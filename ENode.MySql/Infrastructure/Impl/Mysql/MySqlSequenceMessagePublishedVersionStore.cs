@@ -32,11 +32,10 @@ namespace ENode.Infrastructure.Impl.Mysql
 
             _connectionString = optionSetting.GetOptionValue<string>("ConnectionString");
             _tableName = optionSetting.GetOptionValue<string>("TableName");
-            _primaryKeyName = optionSetting.GetOptionValue<string>("PrimaryKeyName");
+            _primaryKeyName = "PRIMARY"; 
 
             Ensure.NotNull(_connectionString, "_connectionString");
             Ensure.NotNull(_tableName, "_tableName");
-            Ensure.NotNull(_primaryKeyName, "_primaryKeyName");
 
             _logger = ObjectContainer.Resolve<ILoggerFactory>().Create(GetType().FullName);
         }
@@ -62,12 +61,12 @@ namespace ENode.Infrastructure.Impl.Mysql
                         return AsyncTaskResult.Success;
                     }
                 }
-                catch (DbException ex)
+                catch (MySql.Data.MySqlClient.MySqlException ex)
                 {
-                    //if (ex.Number == 2627 && ex.Message.Contains(_primaryKeyName))
-                    //{
-                    //    return AsyncTaskResult.Success;
-                    //}
+                    if (ex.Number == 1062 && ex.Message.Contains(_primaryKeyName))
+                    {
+                        return AsyncTaskResult.Success;
+                    }
                     _logger.Error("Insert sequence message published version has sql exception.", ex);
                     return new AsyncTaskResult(AsyncTaskStatus.IOException, ex.Message);
                 }

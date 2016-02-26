@@ -37,11 +37,10 @@ namespace ENode.Commanding.Impl
 
             _connectionString = optionSetting.GetOptionValue<string>("ConnectionString");
             _tableName = optionSetting.GetOptionValue<string>("TableName");
-            _primaryKeyName = optionSetting.GetOptionValue<string>("PrimaryKeyName");
+            _primaryKeyName = "PRIMARY";
 
             Ensure.NotNull(_connectionString, "_connectionString");
             Ensure.NotNull(_tableName, "_tableName");
-            Ensure.NotNull(_primaryKeyName, "_primaryKeyName");
 
             _jsonSerializer = ObjectContainer.Resolve<IJsonSerializer>();
             _typeNameProvider = ObjectContainer.Resolve<ITypeNameProvider>();
@@ -69,12 +68,12 @@ namespace ENode.Commanding.Impl
                         return new AsyncTaskResult<CommandAddResult>(AsyncTaskStatus.Success, null, CommandAddResult.Success);
                     }
                 }
-                catch (DbException ex)
+                catch (MySql.Data.MySqlClient.MySqlException ex)
                 {
-                    //if (ex.Number == 2627 && ex.Message.Contains(_primaryKeyName))
-                    //{
-                    //    return new AsyncTaskResult<CommandAddResult>(AsyncTaskStatus.Success, null, CommandAddResult.DuplicateCommand);
-                    //}
+                    if (ex.Number == 1062 && ex.Message.Contains(_primaryKeyName))
+                    {
+                        return new AsyncTaskResult<CommandAddResult>(AsyncTaskStatus.Success, null, CommandAddResult.DuplicateCommand);
+                    }
                     _logger.Error(string.Format("Add handled command has sql exception, handledCommand: {0}", handledCommand), ex);
                     return new AsyncTaskResult<CommandAddResult>(AsyncTaskStatus.IOException, ex.Message, CommandAddResult.Failed);
                 }

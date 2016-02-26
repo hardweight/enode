@@ -16,7 +16,7 @@ namespace ENode.Infrastructure.Impl.Mysql
     public class MySqlMessageHandleRecordStore : IMessageHandleRecordStore
     {
         #region Private Variables
-
+        
         private readonly string _connectionString;
         private readonly string _oneMessageTableName;
         private readonly string _oneMessageTablePrimaryKeyName;
@@ -36,20 +36,16 @@ namespace ENode.Infrastructure.Impl.Mysql
 
             _connectionString = optionSetting.GetOptionValue<string>("ConnectionString");
             _oneMessageTableName = optionSetting.GetOptionValue<string>("OneMessageTableName");
-            _oneMessageTablePrimaryKeyName = optionSetting.GetOptionValue<string>("OneMessageTablePrimaryKeyName");
+            _oneMessageTablePrimaryKeyName = "PRIMARY"; //MySql's primary key name always be "PRIMARY"
             _twoMessageTableName = optionSetting.GetOptionValue<string>("TwoMessageTableName");
-            _twoMessageTablePrimaryKeyName = optionSetting.GetOptionValue<string>("TwoMessageTablePrimaryKeyName");
+            _twoMessageTablePrimaryKeyName = "PRIMARY";  
             _threeMessageTableName = optionSetting.GetOptionValue<string>("ThreeMessageTableName");
-            _threeMessageTablePrimaryKeyName = optionSetting.GetOptionValue<string>("ThreeMessageTablePrimaryKeyName");
+            _threeMessageTablePrimaryKeyName = "PRIMARY"; 
 
             Ensure.NotNull(_connectionString, "_connectionString");
             Ensure.NotNull(_oneMessageTableName, "_oneMessageTableName");
-            Ensure.NotNull(_oneMessageTablePrimaryKeyName, "_oneMessageTablePrimaryKeyName");
             Ensure.NotNull(_twoMessageTableName, "_twoMessageTableName");
-            Ensure.NotNull(_twoMessageTablePrimaryKeyName, "_twoMessageTablePrimaryKeyName");
             Ensure.NotNull(_threeMessageTableName, "_threeMessageTableName");
-            Ensure.NotNull(_threeMessageTablePrimaryKeyName, "_threeMessageTablePrimaryKeyName");
-
             _logger = ObjectContainer.Resolve<ILoggerFactory>().Create(GetType().FullName);
         }
 
@@ -65,12 +61,12 @@ namespace ENode.Infrastructure.Impl.Mysql
                     return AsyncTaskResult.Success;
                 }
             }
-            catch (DbException ex)
+            catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                //if (ex.Number == 2627 && ex.Message.Contains(_oneMessageTablePrimaryKeyName))
-                //{
-                //    return AsyncTaskResult.Success;
-                //}
+                if (ex.Number == 1062 && ex.Message.Contains(_oneMessageTablePrimaryKeyName))
+                {
+                    return AsyncTaskResult.Success;
+                }
                 _logger.Error("Insert message handle record has sql exception.", ex);
                 return new AsyncTaskResult(AsyncTaskStatus.IOException, ex.Message);
             }
@@ -90,12 +86,12 @@ namespace ENode.Infrastructure.Impl.Mysql
                     return AsyncTaskResult.Success;
                 }
             }
-            catch (DbException ex)
+            catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                //if (ex.Number == 2627 && ex.Message.Contains(_twoMessageTablePrimaryKeyName))
-                //{
-                //    return AsyncTaskResult.Success;
-                //}
+                if (ex.Number == 1062 && ex.Message.Contains(_twoMessageTablePrimaryKeyName))
+                {
+                    return AsyncTaskResult.Success;
+                }
                 _logger.Error("Insert two-message handle record has sql exception.", ex);
                 return new AsyncTaskResult(AsyncTaskStatus.IOException, ex.Message);
             }
@@ -115,12 +111,12 @@ namespace ENode.Infrastructure.Impl.Mysql
                     return AsyncTaskResult.Success;
                 }
             }
-            catch (DbException ex)
+            catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                //if (ex.Number == 2627 && ex.Message.Contains(_threeMessageTablePrimaryKeyName))
-                //{
-                //    return AsyncTaskResult.Success;
-                //}
+                if (ex.Number == 1062 && ex.Message.Contains(_threeMessageTablePrimaryKeyName))
+                {
+                    return AsyncTaskResult.Success;
+                }
                 _logger.Error("Insert three-message handle record has sql exception.", ex);
                 return new AsyncTaskResult(AsyncTaskStatus.IOException, ex.Message);
             }
