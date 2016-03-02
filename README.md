@@ -2,6 +2,8 @@
 # About this fork:
    implement mysql event store.
 
+**This project has been moved to: [https://github.com/suchafool/enode.mysql].**
+
 
 # Original readme:
 
